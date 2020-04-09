@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.svm import SVC
 
-def get_datasets():
+def get_datasets(std_size=False):
     brca = pd.read_csv('data/Gistic2_CopyNumber_BRCA', sep='\t')
     ovca = pd.read_csv('data/Gistic2_CopyNumber_OVCA', sep='\t')
     brca.set_index('Gene Symbol', inplace=True)
@@ -12,7 +12,13 @@ def get_datasets():
     ovca = ovca.transpose()
     brca['BRCA'] = 1
     ovca['BRCA'] = 0
-    df = pd.concat([brca, ovca[1:]])
+    print('size brca, ovca', len(brca), len(ovca))
+    if not std_size:
+        print('normal size', len(brca)+len(ovca))
+        df = pd.concat([brca, ovca[1:]])
+    elif std_size:
+        print('sampled size', len(ovca)+len(ovca))
+        df = pd.concat([brca.sample(n=len(ovca)), ovca[1:]])
     print(len(df), len(brca.transpose()-2) + len(ovca.transpose()-2))
     return df
 
